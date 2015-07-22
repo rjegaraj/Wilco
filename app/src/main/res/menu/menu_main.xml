@@ -3,4 +3,16 @@
     xmlns:tools="http://schemas.android.com/tools" tools:context=".MainActivity">
     <item android:id="@+id/action_settings" android:title="@string/action_settings"
         android:orderInCategory="100" app:showAsAction="never" />
+
+    <item android:id="@+id/channel_settings"
+        android:icon = "@drawable/walkietalkie"
+        android:title="@string/channel_settings"
+        app:showAsAction="ifRoom"/>
+
+    <item android:id="@+id/bluetooth_settings"
+        android:icon = "@drawable/bluetooth"
+        android:title="@string/bluetooth_settings"
+        app:showAsAction="ifRoom"/>
+
+
 </menu>

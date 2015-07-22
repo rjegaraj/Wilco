@@ -1,0 +1,95 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".MainActivity"
+    >
+
+    <Button
+        android:id="@+id/channel_number"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:background="@drawable/rectangle"
+        android:text="17"
+        android:layout_above="@+id/privacy_number"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="62dp"
+        android:layout_x="124dp"
+        android:layout_y="144dp" />
+
+    <Button
+        android:id="@+id/privacy_number"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:background="@drawable/rectangle"
+        android:text="24"
+        android:layout_marginBottom="134dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignLeft="@+id/channel_number"
+        android:layout_alignStart="@+id/channel_number"
+        android:layout_x="129dp"
+        android:layout_y="301dp" />
+
+    <ToggleButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/CTCSS_DCS"
+        android:layout_alignParentBottom="true"
+        android:layout_alignLeft="@+id/privacy_number"
+        android:layout_alignStart="@+id/privacy_number"
+        android:checked="false"
+        android:textOff="CTCSS"
+        android:textOn="DCS" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="CTCSS/DCS"
+        android:id="@+id/textView4"
+        android:layout_above="@+id/CTCSS_DCS"
+        android:layout_alignLeft="@+id/CTCSS_DCS"
+        android:layout_alignStart="@+id/CTCSS_DCS" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Up"
+        android:id="@+id/Channel_Up"
+        android:layout_alignTop="@+id/channel_number"
+        android:layout_alignLeft="@+id/Channel_Down"
+        android:layout_alignStart="@+id/Channel_Down" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Down"
+        android:id="@+id/Channel_Down"
+        android:layout_below="@+id/Channel_Up"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Up"
+        android:id="@+id/Privacy_Up"
+        android:layout_alignTop="@+id/privacy_number"
+        android:layout_alignLeft="@+id/Channel_Down"
+        android:layout_alignStart="@+id/Channel_Down" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Down"
+        android:id="@+id/Privacy_Down"
+        android:layout_below="@+id/Privacy_Up"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+</RelativeLayout>

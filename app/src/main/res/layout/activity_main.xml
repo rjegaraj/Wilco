@@ -5,7 +5,63 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".MainActivity">
 
-    <TextView android:text="@string/hello_world" android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/button"
+        android:background="@drawable/roundedbutton"
+        android:width = "80dp"
+        android:height = "80dp"
+        android:gravity="center_vertical|center_horizontal"
+        android:layout_above="@+id/textView3"
+        android:layout_centerHorizontal="true" />
+
+    <Button
+        android:id="@+id/channel_number"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:background="@drawable/rectangle"
+        android:layout_below="@+id/textView"
+        android:layout_centerHorizontal="true"
+        android:text="17" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Channel"
+        android:id="@+id/textView"
+        android:layout_marginTop="38dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Privacy Code Type: CTCSS"
+        android:id="@+id/Privacy_Code_Type"
+        android:layout_above="@+id/privacy_number"
+        android:layout_centerHorizontal="true" />
+    <Button
+        android:id="@+id/privacy_number"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:background="@drawable/rectangle"
+        android:text="24"
+        android:layout_marginBottom="43dp"
+        android:layout_above="@+id/button"
+        android:layout_centerHorizontal="true" />
+
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Push to Talk"
+        android:id="@+id/textView3"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />
 
 </RelativeLayout>
