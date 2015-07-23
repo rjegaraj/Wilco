@@ -152,8 +152,11 @@ public class MainActivity extends ActionBarActivity {
             return true;
         } else if (id == R.id.channel_settings) {
             Intent myIntent = new Intent(MainActivity.this, ChannelSettings.class);
-            //myIntent.putExtra("key", value);
-            MainActivity.this.startActivity(myIntent);
+            myIntent.putExtra("Channel_Number", channel_button.getText().toString());
+            myIntent.putExtra("Privacy_Number", privacy_button.getText().toString());
+            //Ew, refactor later.
+            myIntent.putExtra("CTCSS_DCS", privacy_code_type.getText().toString().substring(19, privacy_code_type.getText().toString().length()));
+            MainActivity.this.startActivityForResult(myIntent,1);
         } else if (id == R.id.bluetooth_settings) {
             final BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 //        BroadcastReceiver mReceiver;

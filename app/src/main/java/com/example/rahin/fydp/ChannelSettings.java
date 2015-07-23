@@ -101,7 +101,7 @@ public class ChannelSettings extends ActionBarActivity {
 
         CTCSS_DCS.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                privacy_number.setText("0");
+                privacy_number.setText("1");
             }
         });
 
