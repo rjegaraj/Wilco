@@ -173,6 +173,7 @@ public class MainActivity extends ActionBarActivity {
                 filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED);
                 filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
                 mBluetoothAdapter.startDiscovery();
+                mDeviceList.clear();
                 registerReceiver(mReceiver, filter);
             }
         }
@@ -183,10 +184,12 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // Check which request we're responding to
-        if (resultCode == RESULT_OK) {
-            channel_button.setText(data.getStringExtra("Channel_number"));
-            privacy_button.setText(data.getStringExtra("Privacy_number"));
-            privacy_code_type.setText("Privacy Code Type: " + data.getStringExtra("CTCSS_DCS"));
+        if (requestCode == 1) {
+            if (resultCode == RESULT_OK) {
+                channel_button.setText(data.getStringExtra("Channel_number"));
+                privacy_button.setText(data.getStringExtra("Privacy_number"));
+                privacy_code_type.setText("Privacy Code Type: " + data.getStringExtra("CTCSS_DCS"));
+            }
         }
     }
 
