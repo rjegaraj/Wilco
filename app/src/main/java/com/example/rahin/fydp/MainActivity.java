@@ -63,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
     SpeexEncoder mEncoder = new SpeexEncoder();
     private byte[] mBuffer;
     private AudioRecord mRecorder;
+private AudioTrack mAudioPlayer;
     private boolean mIsRecording;
     private File mRawFile;
     private File mEncodedFile;
@@ -72,6 +73,27 @@ public class MainActivity extends AppCompatActivity {
     Button channel_button;
     Button privacy_button;
     TextView privacy_code_type;
+
+    private AudioRecord.OnRecordPositionUpdateListener mRecordListener = new AudioRecord.OnRecordPositionUpdateListener() {
+
+        public void onPeriodicNotification(AudioRecord recorder) {
+//            mSamplesRead = recorder.read(mAudioBuffer, 0, AUDIO_BUFFER_SAMPLEREAD_SIZE);
+//            if (mSamplesRead > 0) {
+//
+//                // do something here...
+//
+//            }
+//            while (mIsRecording) {
+//                int mSamplesRead = mRecorder.read(mBuffer, 0, mBuffer.length);
+//                bt.send(mBuffer, true);
+//            }
+        }
+
+        public void onMarkerReached(AudioRecord recorder) {
+//            Error("What? Hu!? Where am I?");
+        }
+    };
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,15 +116,15 @@ public class MainActivity extends AppCompatActivity {
         }
 
     channel_button.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                Intent myIntent = new Intent(MainActivity.this, ChannelSettings.class);
-                myIntent.putExtra("Channel_Number", channel_button.getText().toString());
-                myIntent.putExtra("Privacy_Number", privacy_button.getText().toString());
-                //Ew, refactor later.
-                myIntent.putExtra("CTCSS_DCS", privacy_code_type.getText().toString().substring(19, privacy_code_type.getText().toString().length()));
-                MainActivity.this.startActivityForResult(myIntent, 1);
-            }
-        });
+        public void onClick(View v) {
+            Intent myIntent = new Intent(MainActivity.this, ChannelSettings.class);
+            myIntent.putExtra("Channel_Number", channel_button.getText().toString());
+            myIntent.putExtra("Privacy_Number", privacy_button.getText().toString());
+            //Ew, refactor later.
+            myIntent.putExtra("CTCSS_DCS", privacy_code_type.getText().toString().substring(19, privacy_code_type.getText().toString().length()));
+            MainActivity.this.startActivityForResult(myIntent, 1);
+        }
+    });
 
         privacy_button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -146,30 +168,31 @@ public class MainActivity extends AppCompatActivity {
 //                }
                 if (!mIsRecording) {
                     mIsRecording = true;
+                    bt.send("AUDIOS", true);
+//                    mRecorder.setPositionNotificationPeriod(400);
+//                    mRecorder.setRecordPositionUpdateListener(mRecordListener);
                     mRecorder.startRecording();
                     mRawFile = new File(Environment.getExternalStorageDirectory(), "rawAudio.raw");
                     Log.e("IN RECORD", "IN RECORD");
                     startBufferedWrite(mRawFile);
-                }
-                else {
+                } else {
                     mIsRecording = false;
                     mRecorder.stop();
                     mEncodedFile = new File(Environment.getExternalStorageDirectory(), "encAudio.spx");
                     Log.e("Read", String.valueOf(mEncodedFile.canRead()));
-                    FileInputStream fileInputStream=null;
+                    FileInputStream fileInputStream = null;
                     Log.e("Test", "Test");
                     byte[] bFile = new byte[(int) mRawFile.length()];
                     Log.e("test", String.valueOf(mRawFile.length()));
 
 
-
-                        ShortBuffer intBuf = ByteBuffer.wrap(bFile).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer();
-                        short[] samples16Bit = new short[intBuf.remaining()];
-                        intBuf.get(samples16Bit);
-                        byte[] data1 = new byte[samples16Bit.length];
-                        for (int i = 0; i < samples16Bit.length; i++) {
-                            data1[i] = (byte)((samples16Bit[i] / 256)+128);
-                        }
+                    ShortBuffer intBuf = ByteBuffer.wrap(bFile).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer();
+                    short[] samples16Bit = new short[intBuf.remaining()];
+                    intBuf.get(samples16Bit);
+                    byte[] data1 = new byte[samples16Bit.length];
+                    for (int i = 0; i < samples16Bit.length; i++) {
+                        data1[i] = (byte) ((samples16Bit[i] / 256) + 128);
+                    }
 
 //                    try {
 //                        AudioTrack audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, 8000, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_8BIT, data1.length, AudioTrack.MODE_STATIC);
@@ -182,7 +205,11 @@ public class MainActivity extends AppCompatActivity {
                         fileInputStream.read(bFile);
                         fileInputStream.close();
 
-                        bt.send(bFile, true);
+//                        bt.send(data1, true);
+                        //bt.send("AUDIO", true);
+//                        bt.send(bFile, true);
+//                        bt.send(new byte[] {0x38, 0x38, 0x38, 0x38, 0x38, 0x38, 0x38, 0x38, 0x38, 0x38, 0x38, 0x38, 0x38, 0x38, 0x38, 0x38, 0x38, 0x38, 0x38, 0x38, 0x38, 0x38, 0x38, 0x38, 0x38, 0x38, 0x38, 0x38, 0x38, 0x38, 0x38, 0x38, 0x38, 0x38, 0x38, 0x38}, true);
+
                     } catch (Exception e) {
                         Log.e("test", e.getMessage());
                     }
@@ -334,7 +361,9 @@ public class MainActivity extends AppCompatActivity {
                 AudioFormat.ENCODING_PCM_16BIT);
         mBuffer = new byte[bufferSize];
         mRecorder = new AudioRecord(MediaRecorder.AudioSource.MIC, 8000, AudioFormat.CHANNEL_IN_MONO,
-                AudioFormat.ENCODING_PCM_16BIT, bufferSize);
+                AudioFormat.ENCODING_PCM_16BIT, 640);
+        mAudioPlayer = new AudioTrack(AudioManager.STREAM_MUSIC, 8000, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT, mBuffer.length, AudioTrack.MODE_STREAM);
+
     }
 
     private void initEncoder() {
@@ -350,11 +379,12 @@ public class MainActivity extends AppCompatActivity {
 
                 try {
                     output = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(file)));
+                    if (mAudioPlayer.getPlayState() != AudioTrack.PLAYSTATE_PLAYING)
+                        mAudioPlayer.play();
                     while (mIsRecording) {
                         int readSize = mRecorder.read(mBuffer, 0, mBuffer.length);
-                        for (int i = 0; i < readSize; i++) {
-                            output.writeByte(mBuffer[i]);
-                        }
+                            bt.send(mBuffer, true);
+//                            mAudioPlayer.write(mBuffer,0,mBuffer.length);
                     }
                 } catch (IOException e) {
                     Log.e("IOException", e.getMessage());
