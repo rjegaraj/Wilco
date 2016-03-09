@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothDevice;
 import java.io.FileNotFoundException;
 import java.nio.ByteOrder;
 import android.content.BroadcastReceiver;
+import android.content.pm.PackageManager;
 import android.media.AudioAttributes;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
@@ -48,6 +49,7 @@ import java.nio.ByteBuffer;
 import java.nio.ShortBuffer;
 import java.nio.channels.Channel;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import app.akexorcist.bluetotohspp.library.BluetoothSPP;
 import app.akexorcist.bluetotohspp.library.BluetoothState;
@@ -81,6 +83,7 @@ private AudioTrack mAudioPlayer;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         AudioManager mgr = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        Log.e("Permission", String.valueOf(checkWriteExternalPermission()));
         Log.e("HAHAHAHA", String.valueOf(mgr.getProperty(AudioManager.PROPERTY_OUTPUT_FRAMES_PER_BUFFER)));
         setContentView(R.layout.activity_main);
         final Button button = (Button) findViewById(R.id.button);
@@ -127,6 +130,8 @@ private AudioTrack mAudioPlayer;
             public void onClick(View v) {
                 if (!mIsRecording) {
                     mIsRecording = true;
+                    Log.e("RECORDING", "RECORDING");
+                    bt.send("CMDSEQ", true);
                     bt.send("AUDIOS", true);
                     mRecorder.startRecording();
                     mRawFile = new File(Environment.getExternalStorageDirectory(), "rawAudio.raw");
@@ -134,6 +139,8 @@ private AudioTrack mAudioPlayer;
                 } else {
                     mIsRecording = false;
                     mRecorder.stop();
+                    bt.send("CMDSEQ", true);
+                    bt.send("AUDSTP", true);
                     mEncodedFile = new File(Environment.getExternalStorageDirectory(), "encAudio.spx");
                     Log.e("Read", String.valueOf(mEncodedFile.canRead()));
                     FileInputStream fileInputStream = null;
@@ -187,6 +194,7 @@ private AudioTrack mAudioPlayer;
                 Log.e("BC127", "Connected to Bluetooth");
                 //Prepare BC127 in DATA mode
                 Log.e("SENT", "SENT");
+                bt.send("CMDSEQ", true);
                 bt.send("COMMAND+PAIR", true);
             }
 
@@ -201,15 +209,24 @@ private AudioTrack mAudioPlayer;
 
         bt.setOnDataReceivedListener(new BluetoothSPP.OnDataReceivedListener() {
             public void onDataReceived(byte[] data, String message) {
-                String received = new String(data);
-                Log.e("Received Data", received);
-                Log.e("Data.len", String.valueOf(data.length));
+//                String received = new String(data);
+//                Log.e("Received Data", received);
+//                for (int i = 0; i < data.length; i++) {
+//                    int tmp = (int)data[i];
+//                    Log.e("Int: ", Integer.toHexString(tmp));
+//                }
+//                for (int i = 0; i < data.length; i++) {
+//                    if (Integer.toHexString(data[i]).length() > 2) {
+//                        data[i] = data[i - 1];
+//                    }
+//                }
+//                Log.e("Data.len", String.valueOf(data.length));
                 playAudio(data);
-                CharSequence text = received;
-                int duration = Toast.LENGTH_SHORT;
-
-                Toast toast = Toast.makeText(getApplicationContext(), text, duration);
-                toast.show();
+//                CharSequence text = received;
+//                int duration = Toast.LENGTH_SHORT;
+//
+//                Toast toast = Toast.makeText(getApplicationContext(), text, duration);
+//                toast.show();
             }
         });
     }
@@ -292,6 +309,7 @@ private AudioTrack mAudioPlayer;
                 toSendBuilder.append(Integer.toString(channel_number));
                 toSendBuilder.append(Integer.toString(privacy_code));
                 Log.e("sending", toSendBuilder.toString());
+                bt.send("CMDSEQ", true);
                 bt.send("COMMAND+SET", true);
                 //TODO: Add blocking while ACK is not received, wait
                 bt.send(toSendBuilder.toString(), true);
@@ -306,14 +324,15 @@ private AudioTrack mAudioPlayer;
                 AudioFormat.ENCODING_PCM_16BIT);
         Log.e("buffer", String.valueOf(bufferSize));
         mBuffer = new byte[bufferSize];
-        mRecorder = new AudioRecord(MediaRecorder.AudioSource.DEFAULT, 8000, AudioFormat.CHANNEL_IN_MONO,
-                AudioFormat.ENCODING_PCM_16BIT, 700);
-        int minSize = AudioTrack.getMinBufferSize(8000, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT);
+        mRecorder = new AudioRecord(MediaRecorder.AudioSource.VOICE_COMMUNICATION, 8000, AudioFormat.CHANNEL_IN_MONO,
+                AudioFormat.ENCODING_PCM_16BIT, bufferSize);
+        int minSize = AudioTrack.getMinBufferSize(8000, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_8BIT);
         Log.e("BUFFER SIZE", String.valueOf(minSize));
 //        mAudioPlayer = new AudioTrack(AudioManager.STREAM_MUSIC, 7900, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_8BIT, minSize * 9, AudioTrack.MODE_STREAM);
-        mAudioPlayer = new AudioTrack(AudioManager.STREAM_MUSIC, 8000, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT, minSize * 9, AudioTrack.MODE_STREAM);
+        mAudioPlayer = new AudioTrack(AudioManager.STREAM_VOICE_CALL, 8000, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_8BIT, minSize * 4, AudioTrack.MODE_STREAM);
 
-//        mAudioPlayer.play();
+        mAudioPlayer.play();
+//        mAudioPlayer.setVolume(0.2f);
     }
 
     private void initEncoder() {
@@ -329,8 +348,8 @@ private AudioTrack mAudioPlayer;
 
                 try {
                     output = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(file)));
-                    if (mAudioPlayer.getPlayState() != AudioTrack.PLAYSTATE_PLAYING)
-                        mAudioPlayer.play();
+//                    if (mAudioPlayer.getPlayState() != AudioTrack.PLAYSTATE_PLAYING)
+//                        mAudioPlayer.play();
                     while (mIsRecording) {
                         int readSize = mRecorder.read(mBuffer, 0, mBuffer.length);
                             bt.send(mBuffer, true);
@@ -393,16 +412,19 @@ private AudioTrack mAudioPlayer;
     }
 
     public void playAudio(byte[] data) {
-//        final byte[] data_cpy = data;
-//        new Thread(new Runnable() {
-//            public void run() {
-        Log.e("In PlayAudio", "");
-                mAudioPlayer.play();
-                mAudioPlayer.write(data, 0, data.length, AudioTrack.WRITE_NON_BLOCKING);
+        final byte[] data_cpy = data;
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+//        Log.e("In PlayAudio", "");
+//        mAudioPlayer.play();
+
+        mAudioPlayer.write(data_cpy, 0, data_cpy.length, AudioTrack.WRITE_NON_BLOCKING);
 //                mAudioPlayer.write(data, 0, data.length);
-                mAudioPlayer.stop();
-//            }
-//        });
+//                mAudioPlayer.stop();
+            }
+        });
+        t.start();
     }
 
 
@@ -435,4 +457,47 @@ private AudioTrack mAudioPlayer;
 ////            return new File(Environment.getExternalStorageDirectory(), time.format("%Y%m%d%H%M%S") + "." + suffix);
 //        }
 
+    private boolean checkWriteExternalPermission()
+    {
+        String permission = "android.permission.RECORD_AUDIO";
+        int res = getApplicationContext().checkCallingOrSelfPermission(permission);
+        return (res == PackageManager.PERMISSION_GRANTED);
     }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if ((keyCode == KeyEvent.KEYCODE_VOLUME_DOWN)){
+            //Do something
+            if (!mIsRecording) {
+                mIsRecording = true;
+                Log.e("RECORDING", "RECORDING");
+                bt.send("CMDSEQ", true);
+                bt.send("AUDIOS", true);
+                mRecorder.startRecording();
+                mRawFile = new File(Environment.getExternalStorageDirectory(), "rawAudio.raw");
+                startBufferedWrite(mRawFile);
+                return true;
+            }
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        if ((keyCode == KeyEvent.KEYCODE_VOLUME_DOWN)){
+            if (mIsRecording) {
+                mIsRecording = false;
+                mRecorder.stop();
+                bt.send("CMDSEQ", true);
+                bt.send("AUDSTP", true);
+                mEncodedFile = new File(Environment.getExternalStorageDirectory(), "encAudio.spx");
+                Log.e("Read", String.valueOf(mEncodedFile.canRead()));
+                FileInputStream fileInputStream = null;
+                Log.e("Test", "Test");
+                byte[] bFile = new byte[(int) mRawFile.length()];
+                Log.e("test", String.valueOf(mRawFile.length()));
+            }
+        }
+        return true;
+    }
+}

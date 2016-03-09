@@ -92,7 +92,7 @@ public class ChannelSettings extends ActionBarActivity {
         privacy_down.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 int current = Integer.parseInt(privacy_number.getText().toString());
-                if (current > 1) {
+                if (current >= 1) {
                     current--;
                 }
                 privacy_number.setText(Integer.toString(current));
