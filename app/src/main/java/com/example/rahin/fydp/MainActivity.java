@@ -211,15 +211,20 @@ private AudioTrack mAudioPlayer;
             public void onDataReceived(byte[] data, String message) {
 //                String received = new String(data);
 //                Log.e("Received Data", received);
+
 //                for (int i = 0; i < data.length; i++) {
 //                    int tmp = (int)data[i];
-//                    Log.e("Int: ", Integer.toHexString(tmp));
-//                }
-//                for (int i = 0; i < data.length; i++) {
-//                    if (Integer.toHexString(data[i]).length() > 2) {
-//                        data[i] = data[i - 1];
+                    //Log.e("Int: ", Integer.toHexString(tmp));
+//                    if (tmp != 0x7f) {
+//                        Log.e("Int: ", Integer.toString(tmp, 10));
+//                        byte[] test = {data[i]};
+//                        playAudio(test);
 //                    }
 //                }
+                for (int i =0 ; i < data.length; i++) {
+                    int tmp = (int)data[i];
+                    Log.e("Int: ", Integer.toHexString(tmp));
+                }
 //                Log.e("Data.len", String.valueOf(data.length));
                 playAudio(data);
 //                CharSequence text = received;
@@ -419,8 +424,8 @@ private AudioTrack mAudioPlayer;
 //        Log.e("In PlayAudio", "");
 //        mAudioPlayer.play();
 
-        mAudioPlayer.write(data_cpy, 0, data_cpy.length, AudioTrack.WRITE_NON_BLOCKING);
-//                mAudioPlayer.write(data, 0, data.length);
+        mAudioPlayer.write(data_cpy, 0, data_cpy.length);
+//                mAudioPlayer.write(data_cpy, 0, data_cpy.length);
 //                mAudioPlayer.stop();
             }
         });

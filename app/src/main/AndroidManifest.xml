@@ -32,7 +32,7 @@
             android:name=".ChannelSettings"
             android:label="@string/title_activity_channel_settings" >
         </activity>
-        <activity android:name="app.akexorcist.bluetotohspp.DeviceList" />
+        <activity android:name="app.akexorcist.bluetotohspp.library.DeviceList" />
     </application>
 
 </manifest>
