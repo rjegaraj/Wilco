@@ -209,22 +209,6 @@ private AudioTrack mAudioPlayer;
 
         bt.setOnDataReceivedListener(new BluetoothSPP.OnDataReceivedListener() {
             public void onDataReceived(byte[] data, String message) {
-//                String received = new String(data);
-//                Log.e("Received Data", received);
-
-//                for (int i = 0; i < data.length; i++) {
-//                    int tmp = (int)data[i];
-                    //Log.e("Int: ", Integer.toHexString(tmp));
-//                    if (tmp != 0x7f) {
-//                        Log.e("Int: ", Integer.toString(tmp, 10));
-//                        byte[] test = {data[i]};
-//                        playAudio(test);
-//                    }
-//                }
-                for (int i =0 ; i < data.length; i++) {
-                    int tmp = (int)data[i];
-                    Log.e("Int: ", Integer.toHexString(tmp));
-                }
 //                Log.e("Data.len", String.valueOf(data.length));
                 playAudio(data);
 //                CharSequence text = received;

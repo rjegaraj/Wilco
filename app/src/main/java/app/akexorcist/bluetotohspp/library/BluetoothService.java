@@ -355,11 +355,11 @@ public class BluetoothService {
             // Keep listening to the InputStream while connected
             while (true) {
                 try {
-                    while (arr_byte.size() < 320) {
+                    while (arr_byte.size() < 64) {
                         int data = mmInStream.read();
                         arr_byte.add(data);
                     }
-                    Log.e("flushing", "Asdf");
+
                     buffer = new byte[arr_byte.size()];
                     for(int i = 0 ; i < arr_byte.size() ; i++) {
                         buffer[i] = arr_byte.get(i).byteValue();
