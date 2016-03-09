@@ -295,7 +295,13 @@ private AudioTrack mAudioPlayer;
                 StringBuilder toSendBuilder = new StringBuilder();
                 toSendBuilder.append("H");
                 toSendBuilder.append("1");
+                if (channel_number < 10) {
+                    toSendBuilder.append("0");
+                }
                 toSendBuilder.append(Integer.toString(channel_number));
+                if (privacy_code < 10) {
+                    toSendBuilder.append("0");
+                }
                 toSendBuilder.append(Integer.toString(privacy_code));
                 Log.e("sending", toSendBuilder.toString());
                 bt.send("CMDSEQ", true);
@@ -416,35 +422,6 @@ private AudioTrack mAudioPlayer;
         t.start();
     }
 
-
-        //Writing audio to disk
-//        File file = new File(Environment.getExternalStorageDirectory() + "/test.raw");
-//        if (!file.exists()) {
-//            try {
-//                file.createNewFile();
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//        Log.e("Test", file.getPath());
-//        try {
-//            FileOutputStream stream = new FileOutputStream(file.getPath(), true);
-//            stream.write(data);
-//            stream.close();
-//        } catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-
-
-//        }).start();
-//    }
-//        private File getFile(final String suffix) {
-////            Time time = new Time();
-////            time.setToNow();
-////            return new File(Environment.getExternalStorageDirectory(), time.format("%Y%m%d%H%M%S") + "." + suffix);
-//        }
 
     private boolean checkWriteExternalPermission()
     {
