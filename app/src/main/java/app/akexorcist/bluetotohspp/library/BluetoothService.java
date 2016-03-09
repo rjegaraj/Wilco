@@ -356,7 +356,7 @@ public class BluetoothService {
             while (true) {
                 try {
                     while (arr_byte.size() < 64) {
-                        int data = mmInStream.read();
+                        int data = mmInStream.read();   
                         arr_byte.add(data);
                     }
 

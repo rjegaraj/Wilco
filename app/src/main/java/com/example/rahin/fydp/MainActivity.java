@@ -247,8 +247,10 @@ private AudioTrack mAudioPlayer;
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        if (id == R.id.choose_antenna) {
+//            return true;
+            Intent myIntent = new Intent(MainActivity.this, SettingsActivity.class);
+            MainActivity.this.startActivityForResult(myIntent, 2);
         } else if (id == R.id.channel_settings) {
             Intent myIntent = new Intent(MainActivity.this, ChannelSettings.class);
             myIntent.putExtra("Channel_Number", channel_button.getText().toString());
@@ -310,6 +312,12 @@ private AudioTrack mAudioPlayer;
                 bt.send(toSendBuilder.toString(), true);
                 privacy_button.setText(data.getStringExtra("Privacy_number"));
                 privacy_code_type.setText("Privacy Code Type: " + data.getStringExtra("CTCSS_DCS"));
+            }
+        } else if (requestCode == 2) {
+            if (resultCode == RESULT_OK) {
+                String state = data.getStringExtra("useExternalAntennaState");
+                bt.send("CMDSEQ", true);
+                bt.send(state, true);
             }
         }
     }
