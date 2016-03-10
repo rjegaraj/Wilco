@@ -228,6 +228,7 @@ private AudioTrack mAudioPlayer;
 
         }
         mRecorder.release();
+        mAudioPlayer.release();
         super.onDestroy();
     }
 
@@ -355,7 +356,7 @@ private AudioTrack mAudioPlayer;
 //                        mAudioPlayer.play();
                     while (mIsRecording) {
                         int readSize = mRecorder.read(mBuffer, 0, mBuffer.length);
-                            bt.send(mBuffer, true);
+                            bt.send(mBuffer, false);
 //                            mAudioPlayer.write(mBuffer,0,mBuffer.length);
                     }
                 } catch (IOException e) {
