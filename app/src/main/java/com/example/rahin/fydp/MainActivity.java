@@ -130,6 +130,7 @@ private AudioTrack mAudioPlayer;
             public void onClick(View v) {
                 if (!mIsRecording) {
                     mIsRecording = true;
+                    mAudioPlayer.stop();
                     Log.e("RECORDING", "RECORDING");
                     bt.send("CMDSEQ", true);
                     bt.send("AUDIOS", true);
@@ -138,6 +139,7 @@ private AudioTrack mAudioPlayer;
                     startBufferedWrite(mRawFile);
                 } else {
                     mIsRecording = false;
+                    mAudioPlayer.play();
                     mRecorder.stop();
                     bt.send("CMDSEQ", true);
                     bt.send("AUDSTP", true);
@@ -333,8 +335,8 @@ private AudioTrack mAudioPlayer;
         int minSize = AudioTrack.getMinBufferSize(8000, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_8BIT);
         Log.e("BUFFER SIZE", String.valueOf(minSize));
 //        mAudioPlayer = new AudioTrack(AudioManager.STREAM_MUSIC, 7900, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_8BIT, minSize * 9, AudioTrack.MODE_STREAM);
-        mAudioPlayer = new AudioTrack(AudioManager.STREAM_VOICE_CALL, 8000, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_8BIT, minSize * 4, AudioTrack.MODE_STREAM);
-
+        mAudioPlayer = new AudioTrack(AudioManager.STREAM_MUSIC, 8000, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_8BIT, minSize * 4, AudioTrack.MODE_STREAM);
+        mAudioPlayer.setVolume(1.0f);
         mAudioPlayer.play();
 //        mAudioPlayer.setVolume(0.2f);
     }
@@ -445,6 +447,7 @@ private AudioTrack mAudioPlayer;
             //Do something
             if (!mIsRecording) {
                 mIsRecording = true;
+                mAudioPlayer.stop();
                 Log.e("RECORDING", "RECORDING");
                 bt.send("CMDSEQ", true);
                 bt.send("AUDIOS", true);
@@ -462,6 +465,7 @@ private AudioTrack mAudioPlayer;
         if ((keyCode == KeyEvent.KEYCODE_VOLUME_DOWN)){
             if (mIsRecording) {
                 mIsRecording = false;
+                mAudioPlayer.play();
                 mRecorder.stop();
                 bt.send("CMDSEQ", true);
                 bt.send("AUDSTP", true);

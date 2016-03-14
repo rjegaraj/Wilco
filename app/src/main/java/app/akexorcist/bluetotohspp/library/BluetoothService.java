@@ -351,22 +351,40 @@ public class BluetoothService {
         public void run() {
             byte[] buffer;
             ArrayList<Integer> arr_byte = new ArrayList<Integer>();
-
+//            ArrayList<Integer> zeroes = new ArrayList<Integer>();
             // Keep listening to the InputStream while connected
             while (true) {
                 try {
                     while (arr_byte.size() < 64) {
-                        int data = mmInStream.read();   
-                        arr_byte.add(data);
+                        int data = mmInStream.read();
+//                        if (data == 127) {
+//                            zeroes.add(127);
+//                        } else {
+//                            zeroes.clear();
+//                        }
+//                        if (zeroes.size() < 15) {
+                            arr_byte.add(data);
+//                        }
                     }
 
                     buffer = new byte[arr_byte.size()];
                     for(int i = 0 ; i < arr_byte.size() ; i++) {
                         buffer[i] = arr_byte.get(i).byteValue();
                     }
-                    // Send the obtained bytes to the UI Activity
-                    mHandler.obtainMessage(BluetoothState.MESSAGE_READ
-                            , buffer.length, -1, buffer).sendToTarget();
+                    boolean allZeroes = true;
+
+                    for (int i = 0; i < arr_byte.size(); i++) {
+                        if (arr_byte.get(i) != 127) {
+                            allZeroes = false;
+                            break;
+                        }
+                    }
+
+                    if (!allZeroes) {
+                        // Send the obtained bytes to the UI Activity
+                        mHandler.obtainMessage(BluetoothState.MESSAGE_READ
+                                , buffer.length, -1, buffer).sendToTarget();
+                    }
                     arr_byte = new ArrayList<Integer>();
 
                 } catch (IOException e) {
