@@ -3,7 +3,9 @@ package com.example.rahin.fydp;
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothDevice;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.nio.ByteOrder;
 import android.content.BroadcastReceiver;
 import android.content.pm.PackageManager;
@@ -62,7 +64,7 @@ import org.xiph.speex.SpeexEncoder;
 public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_ENABLE_BT = 0;
     private static final int REQUEST_DISCOVERABLE_BT = 0;
-    BluetoothSPP bt;
+    static public BluetoothSPP bt;
     SpeexEncoder mEncoder = new SpeexEncoder();
     private byte[] mBuffer;
     private AudioRecord mRecorder;
@@ -70,6 +72,8 @@ private AudioTrack mAudioPlayer;
     private boolean mIsRecording;
     private File mRawFile;
     private File mEncodedFile;
+    boolean useRoger = false;
+    boolean useExternalAntenna = false;
     byte[] buffer = new byte[320];
 
 
@@ -125,44 +129,95 @@ private AudioTrack mAudioPlayer;
         });
 
 
-        button.setOnClickListener(new View.OnClickListener() {
+        button.setOnTouchListener(new View.OnTouchListener() {
             @SuppressLint("NewApi")
-            public void onClick(View v) {
-                if (!mIsRecording) {
-                    mIsRecording = true;
-                    mAudioPlayer.stop();
-                    Log.e("RECORDING", "RECORDING");
-                    bt.send("CMDSEQ", true);
-                    bt.send("AUDIOS", true);
-                    mRecorder.startRecording();
-                    mRawFile = new File(Environment.getExternalStorageDirectory(), "rawAudio.raw");
-                    startBufferedWrite(mRawFile);
-                } else {
-                    mIsRecording = false;
-                    mAudioPlayer.play();
-                    mRecorder.stop();
-                    bt.send("CMDSEQ", true);
-                    bt.send("AUDSTP", true);
-                    mEncodedFile = new File(Environment.getExternalStorageDirectory(), "encAudio.spx");
-                    Log.e("Read", String.valueOf(mEncodedFile.canRead()));
-                    FileInputStream fileInputStream = null;
-                    Log.e("Test", "Test");
-                    byte[] bFile = new byte[(int) mRawFile.length()];
-                    Log.e("test", String.valueOf(mRawFile.length()));
-
-                    try {
-                        fileInputStream = new FileInputStream(mRawFile);
-                        fileInputStream.read(bFile);
-                        fileInputStream.close();
-                    } catch (Exception e) {
-                        Log.e("test", e.getMessage());
-                    }
-                    try {
-                        encodeFile(mRawFile, mEncodedFile);
-                    } catch (IOException e) {
-                        Log.e("test", e.getMessage());
-                    }
+            public boolean onTouch(View v, MotionEvent event) {
+                switch(event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        if (!mIsRecording) {
+                            mIsRecording = true;
+                            mAudioPlayer.stop();
+                            Log.e("RECORDING", "RECORDING");
+                            bt.send("CMDSEQ", true);
+                            bt.send("AUDIOS", true);
+                            mRecorder.startRecording();
+                            mRawFile = new File(Environment.getExternalStorageDirectory(), "rawAudio.raw");
+                            startBufferedWrite(mRawFile);
+                        }
+                        return true;
+                    case MotionEvent.ACTION_UP:
+                        if (mIsRecording) {
+                            mIsRecording = false;
+                            mAudioPlayer.play();
+                            mRecorder.stop();
+                            /*Roger signal*/
+                            try {
+//                                InputStream is = getApplicationContext().openFileInput("/res/raw/roger.wav");
+                                InputStream is = getResources().openRawResource(getResources().getIdentifier("roger", "raw", getPackageName()));
+                                ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                                byte[] test = new byte[1024];
+//                                while (is.available() > 0) {
+                                int bytesRead;
+                                while ((bytesRead = is.read(test)) != -1){
+//                                    int read = is.read();
+//                                    bt.send(new byte[] {(byte)read}, false);
+                                    bos.write(test, 0, bytesRead);
+                                }
+                                byte[] toOut = bos.toByteArray();
+                                bt.send(toOut, false);
+                            } catch (FileNotFoundException e) {
+                                Log.e("FILE NOT FOUND", "FILE NOT FOUND");
+                                e.printStackTrace();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            bt.send("CMDSEQ", true);
+                            bt.send("AUDSTP", true);
+                            mEncodedFile = new File(Environment.getExternalStorageDirectory(), "encAudio.spx");
+                            Log.e("Read", String.valueOf(mEncodedFile.canRead()));
+                            FileInputStream fileInputStream = null;
+                            Log.e("Test", "Test");
+                            byte[] bFile = new byte[(int) mRawFile.length()];
+                            Log.e("test", String.valueOf(mRawFile.length()));
+                        }
+                        return true;
                 }
+//                if (!mIsRecording) {
+//                    mIsRecording = true;
+//                    mAudioPlayer.stop();
+//                    Log.e("RECORDING", "RECORDING");
+//                    bt.send("CMDSEQ", true);
+//                    bt.send("AUDIOS", true);
+//                    mRecorder.startRecording();
+//                    mRawFile = new File(Environment.getExternalStorageDirectory(), "rawAudio.raw");
+//                    startBufferedWrite(mRawFile);
+//                } else {
+//                    mIsRecording = false;
+//                    mAudioPlayer.play();
+//                    mRecorder.stop();
+//                    bt.send("CMDSEQ", true);
+//                    bt.send("AUDSTP", true);
+//                    mEncodedFile = new File(Environment.getExternalStorageDirectory(), "encAudio.spx");
+//                    Log.e("Read", String.valueOf(mEncodedFile.canRead()));
+//                    FileInputStream fileInputStream = null;
+//                    Log.e("Test", "Test");
+//                    byte[] bFile = new byte[(int) mRawFile.length()];
+//                    Log.e("test", String.valueOf(mRawFile.length()));
+//
+//                    try {
+//                        fileInputStream = new FileInputStream(mRawFile);
+//                        fileInputStream.read(bFile);
+//                        fileInputStream.close();
+//                    } catch (Exception e) {
+//                        Log.e("test", e.getMessage());
+//                    }
+//                    try {
+//                        encodeFile(mRawFile, mEncodedFile);
+//                    } catch (IOException e) {
+//                        Log.e("test", e.getMessage());
+//                    }
+//                }
+                return false;
             }
         });
     }
@@ -253,6 +308,8 @@ private AudioTrack mAudioPlayer;
         if (id == R.id.choose_antenna) {
 //            return true;
             Intent myIntent = new Intent(MainActivity.this, SettingsActivity.class);
+            myIntent.putExtra("useRoger", useRoger);
+            myIntent.putExtra("useExternalAntenna", useExternalAntenna);
             MainActivity.this.startActivityForResult(myIntent, 2);
         } else if (id == R.id.channel_settings) {
             Intent myIntent = new Intent(MainActivity.this, ChannelSettings.class);
@@ -297,6 +354,7 @@ private AudioTrack mAudioPlayer;
                 channel_button.setText(data.getStringExtra("Channel_number"));
                 int channel_number = Integer.parseInt(data.getStringExtra("Channel_number"));
                 int privacy_code = Integer.parseInt(data.getStringExtra("Privacy_number"));
+                String isCTCSS = data.getStringExtra("CTCSS_DCS");
                 StringBuilder toSendBuilder = new StringBuilder();
                 toSendBuilder.append("H");
                 toSendBuilder.append("1");
@@ -304,10 +362,17 @@ private AudioTrack mAudioPlayer;
                     toSendBuilder.append("0");
                 }
                 toSendBuilder.append(Integer.toString(channel_number));
+                if (isCTCSS.equals("CTCSS")) {
+                    toSendBuilder.append("1");
+                } else {
+                    toSendBuilder.append("0");
+                }
+
                 if (privacy_code < 10) {
                     toSendBuilder.append("0");
                 }
                 toSendBuilder.append(Integer.toString(privacy_code));
+
                 Log.e("sending", toSendBuilder.toString());
                 bt.send("CMDSEQ", true);
                 bt.send("COMMAND+SET", true);
@@ -319,6 +384,8 @@ private AudioTrack mAudioPlayer;
         } else if (requestCode == 2) {
             if (resultCode == RESULT_OK) {
                 String state = data.getStringExtra("useExternalAntennaState");
+                useRoger = data.getBooleanExtra("useRoger", false);
+                useExternalAntenna = data.getBooleanExtra("useExternalAntennaStateBool", false);
                 bt.send("CMDSEQ", true);
                 bt.send(state, true);
             }
@@ -457,7 +524,8 @@ private AudioTrack mAudioPlayer;
                 return true;
             }
         }
-        return super.onKeyDown(keyCode, event);
+//        return super.onKeyDown(keyCode, event);
+        return true;
     }
 
     @Override
@@ -467,6 +535,28 @@ private AudioTrack mAudioPlayer;
                 mIsRecording = false;
                 mAudioPlayer.play();
                 mRecorder.stop();
+                if (useRoger) {
+                    try {
+//                                InputStream is = getApplicationContext().openFileInput("/res/raw/roger.wav");
+                        InputStream is = getResources().openRawResource(getResources().getIdentifier("roger", "raw", getPackageName()));
+                        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                        byte[] test = new byte[1024];
+//                                while (is.available() > 0) {
+                        int bytesRead;
+                        while ((bytesRead = is.read(test)) != -1) {
+//                                    int read = is.read();
+//                                    bt.send(new byte[] {(byte)read}, false);
+                            bos.write(test, 0, bytesRead);
+                        }
+                        byte[] toOut = bos.toByteArray();
+                        bt.send(toOut, false);
+                    } catch (FileNotFoundException e) {
+                        Log.e("FILE NOT FOUND", "FILE NOT FOUND");
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
                 bt.send("CMDSEQ", true);
                 bt.send("AUDSTP", true);
                 mEncodedFile = new File(Environment.getExternalStorageDirectory(), "encAudio.spx");

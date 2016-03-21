@@ -23,7 +23,7 @@
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:background="@drawable/rectangle"
-        android:text="0"
+        android:text="38"
         android:layout_marginBottom="134dp"
         android:layout_alignParentBottom="true"
         android:layout_alignLeft="@+id/channel_number"

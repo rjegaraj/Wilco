@@ -2,7 +2,7 @@
     <string name="app_name">Wilco</string>
 
     <string name="hello_world">Hello world!</string>
-    <string name="choose_antenna">Choose Antenna</string>
+    <string name="choose_antenna">Settings</string>
     <string name="title_activity_device_list">DeviceListActivity</string>
     <string name="channel_settings">Channel Settings</string>
     <string name="title_activity_channel_settings">Channel Settings</string>

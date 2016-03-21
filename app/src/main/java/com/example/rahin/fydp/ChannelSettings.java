@@ -8,7 +8,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.Toast;
 import android.widget.ToggleButton;
+
+import app.akexorcist.bluetotohspp.library.BluetoothSPP;
 
 
 public class ChannelSettings extends ActionBarActivity {
@@ -101,10 +104,24 @@ public class ChannelSettings extends ActionBarActivity {
 
         CTCSS_DCS.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                privacy_number.setText("1");
+                privacy_number.setText("38");
             }
         });
 
+//        MainActivity.bt.send("CMDSEQ", true);
+//        MainActivity.bt.send("TEXT", true);
+//        MainActivity.bt.send("THIS IS A TEXT MESSAGETHIS IS A TEXT MESSAGETHIS IS A TEXT MESSAGETHIS IS A TEXT MESSAGETHIS IS A TEXT MESSAGETHIS IS A TEXT MESSAGETHIS IS A TEXT MESSAGETHIS IS A TEXT MESSAGE", false);
+//
+//        MainActivity.bt.setOnDataReceivedListener(new BluetoothSPP.OnDataReceivedListener() {
+//            @Override
+//            public void onDataReceived(byte[] data, String message) {
+//                CharSequence text = message;
+//                int duration = Toast.LENGTH_SHORT;
+//
+//                Toast toast = Toast.makeText(getApplicationContext(), text, duration);
+//                toast.show();
+//            }
+//        });
     }
 
     @Override

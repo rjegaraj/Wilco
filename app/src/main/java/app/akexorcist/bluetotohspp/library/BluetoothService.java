@@ -355,7 +355,7 @@ public class BluetoothService {
             // Keep listening to the InputStream while connected
             while (true) {
                 try {
-                    while (arr_byte.size() < 64) {
+                    while (arr_byte.size() < 328) {
                         int data = mmInStream.read();
 //                        if (data == 127) {
 //                            zeroes.add(127);
