@@ -23,6 +23,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import android.view.MotionEvent;
+import android.widget.CompoundButton;
 import android.widget.Toast;
 import android.bluetooth.BluetoothAdapter;
 import android.app.Activity;
@@ -38,6 +39,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.media.AudioManager;
 import android.view.KeyEvent;
+import android.widget.ToggleButton;
 
 import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
@@ -80,8 +82,7 @@ private AudioTrack mAudioPlayer;
     private ArrayList<BluetoothDevice> mDeviceList = new ArrayList<BluetoothDevice>();
     Button channel_button;
     Button privacy_button;
-    TextView privacy_code_type;
-
+    ToggleButton privacy_type_button;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,7 +94,7 @@ private AudioTrack mAudioPlayer;
         final Button button = (Button) findViewById(R.id.button);
         channel_button = (Button) findViewById(R.id.channel_number);
         privacy_button = (Button) findViewById(R.id.privacy_number);
-        privacy_code_type = (TextView) findViewById(R.id.Privacy_Code_Type);
+        privacy_type_button = (ToggleButton) findViewById(R.id.CTCSS_DCS);
 
         initRecorder();
         initEncoder();
@@ -108,23 +109,58 @@ private AudioTrack mAudioPlayer;
 
     channel_button.setOnClickListener(new View.OnClickListener() {
         public void onClick(View v) {
-            Intent myIntent = new Intent(MainActivity.this, ChannelSettings.class);
+            Intent myIntent = new Intent(MainActivity.this, ChannelScroll.class);
             myIntent.putExtra("Channel_Number", channel_button.getText().toString());
             myIntent.putExtra("Privacy_Number", privacy_button.getText().toString());
+            myIntent.putExtra("CTCSS_DCS", privacy_type_button.getText());
+            myIntent.putExtra("Requester", "Channel");
             //Ew, refactor later.
-            myIntent.putExtra("CTCSS_DCS", privacy_code_type.getText().toString().substring(19, privacy_code_type.getText().toString().length()));
             MainActivity.this.startActivityForResult(myIntent, 1);
         }
     });
 
         privacy_button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Intent myIntent = new Intent(MainActivity.this, ChannelSettings.class);
+                Intent myIntent = new Intent(MainActivity.this, ChannelScroll.class);
                 myIntent.putExtra("Channel_Number", channel_button.getText().toString());
                 myIntent.putExtra("Privacy_Number", privacy_button.getText().toString());
-                //Ew, refactor later.
-                myIntent.putExtra("CTCSS_DCS", privacy_code_type.getText().toString().substring(19, privacy_code_type.getText().toString().length()));
+                myIntent.putExtra("CTCSS_DCS", privacy_type_button.getText());
+                myIntent.putExtra("Requester", "Privacy");
                 MainActivity.this.startActivityForResult(myIntent, 1);
+            }
+        });
+
+        privacy_type_button.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                int channel_number = Integer.parseInt(channel_button.getText().toString());
+                int privacy_code = Integer.parseInt(privacy_button.getText().toString());
+                if (privacy_code > 38) {
+                    privacy_code = 38;
+                }
+                privacy_button.setText("38");
+                StringBuilder toSendBuilder = new StringBuilder();
+                toSendBuilder.append("H");
+                toSendBuilder.append("1");
+                if (channel_number < 10) {
+                    toSendBuilder.append("0");
+                }
+                toSendBuilder.append(Integer.toString(channel_number));
+                if (privacy_type_button.getText().equals("DCS")) {
+                    toSendBuilder.append("1");
+                } else {
+                    toSendBuilder.append("0");
+                }
+
+                if (privacy_code < 10) {
+                    toSendBuilder.append("0");
+                }
+                toSendBuilder.append(Integer.toString(privacy_code));
+
+                Log.e("sending", toSendBuilder.toString());
+                bt.send("CMDSEQ", true);
+                bt.send("COMMAND+SET", true);
+                //TODO: Add blocking while ACK is not received, wait
+                bt.send(toSendBuilder.toString(), true);
             }
         });
 
@@ -316,7 +352,7 @@ private AudioTrack mAudioPlayer;
             myIntent.putExtra("Channel_Number", channel_button.getText().toString());
             myIntent.putExtra("Privacy_Number", privacy_button.getText().toString());
             //Ew, refactor later.
-            myIntent.putExtra("CTCSS_DCS", privacy_code_type.getText().toString().substring(19, privacy_code_type.getText().toString().length()));
+            myIntent.putExtra("CTCSS_DCS", privacy_type_button.getText());
             MainActivity.this.startActivityForResult(myIntent,1);
         } else if (id == R.id.bluetooth_settings) {
             final BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -380,7 +416,6 @@ private AudioTrack mAudioPlayer;
                 //TODO: Add blocking while ACK is not received, wait
                 bt.send(toSendBuilder.toString(), true);
                 privacy_button.setText(data.getStringExtra("Privacy_number"));
-                privacy_code_type.setText("Privacy Code Type: " + data.getStringExtra("CTCSS_DCS"));
             }
         } else if (requestCode == 2) {
             if (resultCode == RESULT_OK) {

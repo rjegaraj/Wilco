@@ -33,7 +33,8 @@
         <activity android:name="app.akexorcist.bluetotohspp.library.DeviceList" />
         <activity
             android:name=".SettingsActivity"
-            android:label="Settings" ></activity>
+            android:label="Settings" />
+        <activity android:name=".ChannelScroll"></activity>
     </application>
 
 </manifest>

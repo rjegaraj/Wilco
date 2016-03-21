@@ -31,7 +31,6 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Channel"
         android:id="@+id/textView"
-        android:layout_marginTop="38dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
 
@@ -39,19 +38,20 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Privacy Code Type: CTCSS"
+        android:text="Privacy Code"
         android:id="@+id/Privacy_Code_Type"
         android:layout_above="@+id/privacy_number"
-        android:layout_centerHorizontal="true" />
+        android:layout_alignLeft="@+id/privacy_number"
+        android:layout_alignStart="@+id/privacy_number" />
     <Button
         android:id="@+id/privacy_number"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:background="@drawable/rectangle"
         android:text="38"
-        android:layout_marginBottom="43dp"
-        android:layout_above="@+id/button"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerVertical="true"
+        android:layout_alignLeft="@+id/channel_number"
+        android:layout_alignStart="@+id/channel_number" />
 
 
 
@@ -63,5 +63,18 @@
         android:id="@+id/textView3"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true" />
+
+    <ToggleButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/CTCSS_DCS"
+        android:checked="false"
+        android:textOff="CTCSS"
+        android:textOn="DCS"
+        android:layout_above="@+id/button"
+        android:layout_alignLeft="@+id/privacy_number"
+        android:layout_alignStart="@+id/privacy_number"
+        android:layout_alignRight="@+id/privacy_number"
+        android:layout_alignEnd="@+id/privacy_number" />
 
 </RelativeLayout>
