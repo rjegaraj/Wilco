@@ -338,7 +338,8 @@ private AudioTrack mAudioPlayer;
         //THIS IS CURRENTLY NOT BEING USED AS WE DON'T HAVE A BT LIST
         if(requestCode == BluetoothState.REQUEST_CONNECT_DEVICE) {
             if(resultCode == Activity.RESULT_OK)
-                bt.connect(data);
+                if (data != null)
+                    bt.connect(data);
         } else if (requestCode == BluetoothState.REQUEST_ENABLE_BT) {
             if(resultCode == Activity.RESULT_OK) {
                 bt.setupService();
