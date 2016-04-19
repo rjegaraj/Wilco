@@ -34,13 +34,16 @@ public class ChannelScroll extends AppCompatActivity {
         ArrayList<String> values = new ArrayList<String>();
         if (requester.equals("Channel")) {
             for (int i = 1; i < 23; i++) {
+                getSupportActionBar().setTitle(requester);
                 values.add(String.valueOf(i));
             }
         } else if (privacy_type.equals("CTCSS")) {
+            getSupportActionBar().setTitle(privacy_type);
             for (int i = 0; i < 39; i++) {
                 values.add(String.valueOf(i));
             }
         } else {
+            getSupportActionBar().setTitle(privacy_type);
             for (int i = 0; i < 84; i++) {
                 values.add(String.valueOf(i));
             }

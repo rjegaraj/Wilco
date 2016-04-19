@@ -7,10 +7,10 @@
         <!--android:orderInCategory="100"-->
         <!--app:showAsAction="never"/>-->
 
-    <item android:id="@+id/channel_settings"
-        android:icon = "@drawable/walkietalkie"
-        android:title="@string/channel_settings"
-        app:showAsAction="ifRoom"/>
+    <!--<item android:id="@+id/channel_settings"-->
+        <!--android:icon = "@drawable/walkietalkie"-->
+        <!--android:title="@string/channel_settings"-->
+        <!--app:showAsAction="ifRoom"/>-->
 
     <item android:id="@+id/bluetooth_settings"
         android:icon = "@drawable/bluetooth"
